@@ -1,0 +1,42 @@
+when HTTP_REQUEST {
+             #log local0. "cqp wallet [HTTP::header "urid"] "
+             if { [HTTP::uri] contains "/wlmweb-web" } {
+    pool pool_wl_m_web
+}
+elseif { [HTTP::header "gray"] == "01" } {
+                    pool pool_content_gp4
+             }
+             elseif { ([HTTP::uri] starts_with ".95516.com/uci-pre")
+               or ([HTTP::uri] starts_with "/life/inApp/pub/transfer/")
+               or ([HTTP::uri] starts_with "/life/inApp/trans/default/card/list")
+               or ([HTTP::uri] starts_with "/life/inApp/trans/default/card/set")
+               or ([HTTP::uri] starts_with "/life/inApp/pub/card/byMobile")
+             }{
+                 pool pool_wallet_apache_life_zhuanzhang
+             }
+
+
+              elseif { [HTTP::header "gray"] == "10" } {
+                   if { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 3 == 0 } {
+                           pool pool_content_gp1
+                   } elseif { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 3 == 1 } {
+                           pool pool_content_gp2
+                   } elseif { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 3 == 2 } {
+                           pool pool_content_gp3
+                    } else {
+                           pool pool_content_gp1
+                    }
+             } else {
+                   if { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 4 == 0 } {
+                           pool pool_content_gp1
+                   } elseif { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 4 == 1 } {
+                           pool pool_content_gp2
+                   } elseif { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 4 == 2 } {
+                           pool pool_content_gp3
+                   } elseif { [HTTP::header "urid"] != "" && [HTTP::header "urid"] % 4 == 3 } {
+                           pool pool_content_gp4
+                    } else {
+                           pool pool_content_gp1
+                    }
+             }
+      }
